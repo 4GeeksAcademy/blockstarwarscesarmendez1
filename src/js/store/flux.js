@@ -1,47 +1,60 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			personaje: [],
+			onepersonaje: {},
+			favorite: [],
+			planet:[],
+			oneplanet:{}
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
+
 			loadSomePeople: () => {
 				fetch("https://www.swapi.tech/api/people/")
 					.then(res => res.json())
-					.then(data => console.log(data.results))
+					.then(data => setStore({ personaje: data.results }))
 					.catch(err => console.error(err))
 
 			},
-			changeColor: (index, color) => {
-				//get the store
+			loadOnePeople: (uid) => {
+				fetch(`https://www.swapi.tech/api/people/${uid}`)
+					.then(res => res.json())
+					.then(data => setStore({ onepersonaje: data.result }))
+					.catch(err => console.error(err))
+
+			},
+
+			addfavorite(nombre) {
+				const store = getStore()
+				const fav = store.favorite
+				const newfavorite = [...fav, { name: nombre, id: fav.length }]
+				setStore({ favorite: newfavorite })
+			},
+
+			eliminaFavorito(id) {
 				const store = getStore();
+				const fav = store.favorite;
+				const favActualizado = fav.filter((item) => item.id !== id);
+				setStore({ favorite: favActualizado })
+			},
+			
+			loadSomePlanet: () => {
+				fetch("https://www.swapi.tech/api/planets/")
+					.then(res => res.json())
+					.then(data => setStore({ planet: data.results }))
+					.catch(err => console.error(err))
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+			},
+			loadOnePlanet: (uid) => {
+				fetch(`https://www.swapi.tech/api/planets/${uid}`)
+					.then(res => res.json())
+					.then(data => setStore({ oneplanet: data.result }))
+					.catch(err => console.error(err))
 
-				//reset the global store
-				setStore({ demo: demo });
+			},
 			}
-		}
+		};
 	};
-};
 
-export default getState;
+	export default getState;
